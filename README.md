@@ -1,10 +1,10 @@
-# A simple example download of GBIF and import to PostgreSQL
-Prepared by: Brad Boyle (ojalaquellueva AT gmail)
+# A simple example of downloading from GBIF and importing to PostgreSQL
+Prepared by: Brad Boyle (ojalaquellueva AT gmail)  
 Date: 10 Aug. 2022
 
-# I. Download
+## I. Download from GBIF
 
-### 1. Prepare GBIF download
+### 1. Request GBIF download
 * BIEN example: all plant occurrences
 
 1. Go to https://www.gbif.org/
@@ -15,10 +15,14 @@ Date: 10 Aug. 2022
 6. Wait for GBIF to process your request and send you a download link.
 
 
-### 1. Set parameters
-* Adjust accordingly
+### 2. Download GBIF file and unpack
+* Among many other files, will extract "occurrences.txt". This is the main occurences file, and the only one needed for this example
 
 ```
+#######################################
+# Some parameters - adjust accordingly
+#######################################
+
 # Data directory
 # Download file to here
 DD="~/bien/gnrs/gnrsmss/import_GBIF/data"
@@ -28,18 +32,19 @@ DLF="0113553-200613084148143.zip"
 
 # Name of download file on your filesystem...whatever you want
 DLF_LOCAL="gbif_download.zip"
-```
 
-### 1. Get GBIF download file from GBIF & unpack
-```
+#######################################
+# Download the file and unpack
+#######################################
+
 cd $DD
 wget https://api.gbif.org/v1/occurrence/download/request/$DLF -O $DLF_LOCAL
 unzip $DLF_LOCAL
 ```
 
-From this point on, all you want is file `occurrence.txt`
+## II. Prepare occurences file for import to Postgres
 
-### 2. Check file type of ``occurrence.txt`
+### 1. Check file type 
 * If file is utf-8, you should see this:
 
 ```
@@ -54,15 +59,16 @@ If not, convert as follows:
 ```
 mv occurrence.txt occurrence.txt.bak
 iconv -f ISO-8859-1 -t utf-8 -o occurrence.txt occurrence.txt.bak
+rm occurrence.txt.bak
 ```
 
-### 3. Double-up backslashes so Postgres takes them literally
+### 2. Double-up backslashes so Postgres takes them literally
 
 ```
 sed 's/\\/\\\\/g' occurrence.txt > occurrence_cleaned.txt
 ```
 
-### 4. Fix badly formed quotes
+### 3. Fix badly formed quotes
 
 ```
 sed -i 's/,""/,"/g' occurrence_cleaned.txt
@@ -70,13 +76,14 @@ sed -i 's/"",/",/g' occurrence_cleaned.txt
 
 ```
 
-#### 5. Create sample file for testing
+#### 4. Create sample file for testing
+* Run a test import first with this sample before importing the full file
 
 ```
 head -1000 occurrence_cleaned.txt > occurrence_cleaned_sample.txt
 ```
 
-#### 6. Import to Postgres
+## III. Import to Postgres
 
 See script "import_gbif.sql" for SQL commands needed to import to PostgreSQL.
 
