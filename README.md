@@ -1,6 +1,17 @@
-# A simple example of downloading from GBIF and importing to PostgreSQL
+# Simple example of downloading from GBIF and importing to PostgreSQL
 Prepared by: Brad Boyle (ojalaquellueva AT gmail)  
 Date: 10 Aug. 2022
+
+## Requirements
+* Linux or Linux-like OS (e.g., Mac OSX terminal)
+* Utilities installed: `wget`
+* PostgreSQL installed
+* Admin-level access
+   * Step III will work best if you log into Postgres as user postgres or other superuser. e.g.,
+
+      ```
+      sudo -u postgres psql
+      ```
 
 ## I. Download from GBIF
 
@@ -13,7 +24,6 @@ Date: 10 Aug. 2022
 4. Click "Scientific Name" on left hand menu and select "Major Groups", then "Plantae".
 5. Select "Download" option at the top of the data table.
 6. Wait for GBIF to process your request and send you a download link.
-
 
 ### 2. Download GBIF file and unpack
 * Among many other files, will extract "occurrences.txt". This is the main occurences file, and the only one needed for this example
